@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahavir Ultrasound and Digital X-ray</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+
+    <!-- Header Branding -->
+    <header class="bg-blue-700 text-white shadow-md py-4 px-4">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black tracking-wide">Mahavir Ultrasound and Digital X-ray</h1>
+                <p class="text-xs text-blue-200 font-medium mt-0.5">Address: Near Police station, Tekari</p>
+            </div>
+            <div class="text-right w-full md:w-auto text-sm mt-2 md:mt-0 border-t md:border-t-0 border-blue-600 pt-2 md:pt-0">
+                <p class="font-semibold">Contact No: <span class="font-mono">9431235905</span></p>
+                <p class="font-semibold text-blue-200">Emergency Contact No: <span class="font-mono">9852368544</span></p>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-6">
+
+        <!-- ================= LOGIN SCREEN ================= -->
+        <div id="loginScreen" class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-xl mt-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-1 text-center">Secure Portal Login</h2>
+            <p class="text-xs text-gray-500 mb-6 text-center">Enter your registered doctor mobile number or admin ID and password.</p>
+
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mobile Number or Admin ID</label>
+                    <input type="text" id="loginIdInput" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 font-medium" placeholder="Enter mobile or admin ID">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input type="password" id="passwordInput" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500" placeholder="Enter password">
+                </div>
+
+                <button type="submit" id="loginSubmitBtn" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl hover:bg-blue-700 transition shadow-md">
+                    Login
+                </button>
+            </form>
+        </div>
+
+        <!-- ================= DOCTOR DASHBOARD VIEW ================= -->
+        <div id="doctorDashboardView" class="space-y-6 hidden">
+            <div class="bg-white p-4 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4 border border-gray-200">
+                <div>
+                    <span class="text-xs text-gray-500 block">Logged-in Doctor</span>
+                    <h3 id="doctorProfileName" class="text-lg font-bold text-gray-800">Dr. Name</h3>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <span class="text-xs text-gray-500 block">Total Earned Commission (Current Month)</span>
+                        <span id="doctorEarningsDisplay" class="text-lg font-bold text-green-600">₹0</span>
+                    </div>
+                    <button onclick="logout()" class="bg-gray-100 hover:bg-red-50 text-red-600 px-4 py-2 rounded-xl text-sm font-semibold transition">Logout</button>
+                </div>
+            </div>
+
+            <!-- Patient Registration Form -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-lg font-bold text-gray-800 mb-1">Register New Patient Referral</h3>
+                <p class="text-xs text-gray-400 mb-4">Only patient name is strictly required for quick submissions.</p>
+                
+                <form id="referralForm" onsubmit="handleReferralSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Patient Full Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="patientName" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Enter patient name">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Patient Phone Number <span class="text-xs text-gray-400 font-normal">(Optional)</span></label>
+                        <input type="tel" id="patientPhone" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="10-digit mobile number">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Select Scan / Procedure Type <span class="text-xs text-gray-400 font-normal">(Optional)</span></label>
+                        <select id="scanTypeSelect" onchange="updateScanPricing()" class="w-full px-3 py-2 border rounded-lg bg-white">
+                            <!-- Populated via JS -->
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Billed Price (₹) <span class="text-xs text-gray-400 font-normal">(Optional)</span></label>
+                        <input type="number" id="scanPrice" class="w-full px-3 py-2 border rounded-lg bg-gray-50 font-semibold text-gray-800" placeholder="0">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Doctor Commission (₹) <span class="text-xs text-gray-400 font-normal">(Optional)</span></label>
+                        <input type="number" id="doctorCommission" class="w-full px-3 py-2 border rounded-lg bg-gray-50 font-semibold text-green-700" placeholder="0">
+                    </div>
+
+                    <div class="md:col-span-2 pt-2">
+                        <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-xl hover:bg-blue-700 transition shadow">
+                            Submit Referral & Generate Token
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Monthly Archive & Referral History Section -->
+            <div class="bg-white p-6 rounded-xl shadow-md space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b pb-4">
+                    <h3 class="font-bold text-gray-800">My Referred Patients & Monthly Archives</h3>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500 mr-2">Select Month Archive:</label>
+                        <select id="monthArchiveSelect" onchange="renderDoctorDashboard()" class="text-xs border rounded-lg p-2 bg-gray-50 font-semibold">
+                            <!-- Populated via JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-xs font-semibold text-gray-600 uppercase">
+                                <th class="p-3">Token & Date</th>
+                                <th class="p-3">Patient Details</th>
+                                <th class="p-3">Scan Type</th>
+                                <th class="p-3">Arrival</th>
+                                <th class="p-3">Scan Status</th>
+                                <th class="p-3">Payment</th>
+                                <th class="p-3">Commission</th>
+                                <th class="p-3 text-right">Report & Image</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctorReferralsTableBody" class="divide-y divide-gray-200 text-sm">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ADMIN DASHBOARD VIEW ================= -->
+        <div id="adminDashboardView" class="space-y-6 hidden">
+            <div class="bg-white p-6 rounded-xl shadow-md flex justify-between items-center border border-blue-100">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800">Mahavir Reception Admin Control Panel</h3>
+                    <p class="text-sm text-gray-500">Update Statuses, Add Notes/Images, & Click Save to Notify Doctors</p>
+                </div>
+                <button onclick="logout()" class="bg-red-50 text-red-600 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-red-100 transition">Admin Logout</button>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b pb-4">
+                    <h3 class="font-bold text-gray-800">Master Doctor Referrals Log (Monthly Archives)</h3>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500 mr-2">Filter Month:</label>
+                        <select id="adminMonthArchiveSelect" onchange="renderAdminTable()" class="text-xs border rounded-lg p-2 bg-gray-50 font-semibold">
+                            <!-- Populated via JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-xs font-semibold text-gray-600 uppercase">
+                                <th class="p-3">Date & Token</th>
+                                <th class="p-3">Doctor Name</th>
+                                <th class="p-3">Patient Details</th>
+                                <th class="p-3">Scan & Fee</th>
+                                <th class="p-3">Arrival Status</th>
+                                <th class="p-3">Scan Status</th>
+                                <th class="p-3">Payment Status</th>
+                                <th class="p-3 text-right">Action / Save</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminReferralsTableBody" class="divide-y divide-gray-200 text-sm">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal Popup Confirmation Dialog -->
+    <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl text-center">
+            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-bold">✓</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-1">Referral Registered!</h3>
+            <p class="text-xs text-gray-500 mb-4">Token generated for Mahavir Ultrasound & Digital X-ray</p>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 my-4">
+                <span class="text-xs font-semibold text-blue-600 uppercase tracking-wider block mb-1">Token ID</span>
+                <div id="modalTokenId" class="text-2xl font-black text-blue-900 tracking-widest font-mono">REF-XXXXXX</div>
+            </div>
+
+            <div class="text-left bg-gray-50 rounded-lg p-3 text-sm space-y-2 mb-6">
+                <div class="flex justify-between"><span class="text-gray-500">Patient:</span> <span id="modalPatientName" class="font-semibold text-gray-800"></span></div>
+                <div class="flex justify-between"><span class="text-gray-500">Scan:</span> <span id="modalScanType" class="font-semibold text-gray-800"></span></div>
+            </div>
+
+            <button onclick="sendTokenToAdminWhatsApp()" class="w-full bg-green-600 text-white font-semibold py-3 px-4 rounded-xl hover:bg-green-700 transition mb-2 shadow flex items-center justify-center gap-2">
+                <span>Send Token to Admin via WhatsApp (9431235905)</span>
+            </button>
+            <button onclick="closeConfirmationModal()" class="w-full bg-gray-100 text-gray-700 font-semibold py-2.5 px-4 rounded-xl hover:bg-gray-200 transition">Done</button>
+        </div>
+    </div>
+
+    <!-- View Report/Image Modal -->
+    <div id="reportViewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-lg font-bold text-gray-800" id="reportModalTitle">Scan Report & Notes</h3>
+                <button onclick="closeReportViewModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <span class="text-xs font-semibold text-gray-400 uppercase block">Doctor Notes / Impression:</span>
+                    <p id="reportModalNotes" class="text-sm bg-gray-50 p-3 rounded-lg text-gray-800 mt-1">No notes written.</p>
+                </div>
+                
+                <div id="reportModalImageContainer" class="hidden">
+                    <span class="text-xs font-semibold text-gray-400 uppercase block mb-1">Attached Scan Image:</span>
+                    <img id="reportModalImage" src="" alt="Scan Result" class="w-full max-h-64 object-contain rounded-lg border">
+                </div>
+            </div>
+
+            <button onclick="closeReportViewModal()" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-xl hover:bg-blue-700">Close View</button>
+        </div>
+    </div>
+
+    <!-- Script Engine -->
+    <script>
+        const ADMIN_MOBILE = "9431235905";
+
+        const scanPricingMaster = {
+            "Early Pregnancy Scan (NT/First Trimester)": { price: 800, commission: 150 },
+            "Targeted Anomaly Scan (Level II)": { price: 1500, commission: 300 },
+            "Growth Scan with Color Doppler": { price: 1800, commission: 350 },
+            "Whole Abdomen Ultrasound": { price: 1200, commission: 250 },
+            "Pelvic / KUB Ultrasound": { price: 1000, commission: 200 },
+            "Routine Digital X-Ray": { price: 400, commission: 80 }
+        };
+
+        let doctorsDirectory = {
+            "9471249681": { name: "Dr. Sarthak", password: "sarthak" },
+            "9876543210": { name: "Dr. Rajesh Sharma", password: "rajesh123" },
+            "9123456789": { name: "Dr. Priya Nair", password: "priya123" }
+        };
+
+        // Updated Admin Credentials
+        const ADMIN_CREDENTIALS = { id: "mahavir ultrasound", pass: "mahavir2007rajeev" };
+
+        let referralsDB = JSON.parse(localStorage.getItem("mahavir_referrals_db")) || [];
+        let loggedInUser = null;
+        let lastCreatedTokenData = null;
+
+        function saveReferrals() {
+            localStorage.setItem("mahavir_referrals_db", JSON.stringify(referralsDB));
+        }
+
+        function initializeScanDropdown() {
+            const selectElement = document.getElementById("scanTypeSelect");
+            selectElement.innerHTML = '<option value="" selected>-- Select Scan Type (Optional) --</option>';
+            for (const [scanName, details] of Object.entries(scanPricingMaster)) {
+                const option = document.createElement("option");
+                option.value = scanName;
+                option.textContent = `${scanName} — (Fee: ₹${details.price} | Comm: ₹${details.commission})`;
+                selectElement.appendChild(option);
+            }
+        }
+
+        function updateScanPricing() {
+            const selectedScan = document.getElementById("scanTypeSelect").value;
+            if (scanPricingMaster[selectedScan]) {
+                document.getElementById("scanPrice").value = scanPricingMaster[selectedScan].price;
+                document.getElementById("doctorCommission").value = scanPricingMaster[selectedScan].commission;
+            } else {
+                document.getElementById("scanPrice").value = "";
+                document.getElementById("doctorCommission").value = "";
+            }
+        }
+
+        function checkAutoLogin() {
+            const savedSession = localStorage.getItem("mahavir_portal_session");
+            if (savedSession) {
+                try {
+                    loggedInUser = JSON.parse(savedSession);
+                    showDashboard();
+                } catch(e) {
+                    localStorage.removeItem("mahavir_portal_session");
+                }
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const inputId = document.getElementById("loginIdInput").value.trim().toLowerCase();
+            const passInput = document.getElementById("passwordInput").value;
+
+            // 1. Admin Login Check
+            if (inputId === ADMIN_CREDENTIALS.id) {
+                if (passInput === ADMIN_CREDENTIALS.pass) {
+                    loggedInUser = { role: "admin", name: "Mahavir Reception Admin" };
+                    localStorage.setItem("mahavir_portal_session", JSON.stringify(loggedInUser));
+                    showDashboard();
+                    return;
+                } else {
+                    alert("Incorrect Admin Password!");
+                    return;
+                }
+            }
+
+            // 2. Doctor Login Check
+            if (doctorsDirectory[inputId]) {
+                let doc = doctorsDirectory[inputId];
+                if (passInput === doc.password) {
+                    loggedInUser = { role: "doctor", phone: inputId, name: doc.name };
+                    localStorage.setItem("mahavir_portal_session", JSON.stringify(loggedInUser));
+                    showDashboard();
+                    return;
+                } else {
+                    alert("Incorrect Password!");
+                    return;
+                }
+            }
+
+            alert("ID or Mobile number not registered in Mahavir Ultrasound system.");
+        }
+
+        function showDashboard() {
+            document.getElementById("loginScreen").classList.add("hidden");
+            
+            if (loggedInUser.role === "admin") {
+                document.getElementById("doctorDashboardView").classList.add("hidden");
+                document.getElementById("adminDashboardView").classList.remove("hidden");
+                populateMonthDropdowns();
+                renderAdminTable();
+            } else {
+                document.getElementById("adminDashboardView").classList.add("hidden");
+                document.getElementById("doctorDashboardView").classList.remove("hidden");
+                document.getElementById("doctorProfileName").textContent = loggedInUser.name;
+                populateMonthDropdowns();
+                renderDoctorDashboard();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("mahavir_portal_session");
+            loggedInUser = null;
+            document.getElementById("loginScreen").classList.remove("hidden");
+            document.getElementById("doctorDashboardView").classList.add("hidden");
+            document.getElementById("adminDashboardView").classList.add("hidden");
+            document.getElementById("loginForm").reset();
+        }
+
+        function generateTokenID() {
+            return `REF-${Math.floor(100000 + Math.random() * 900000)}`;
+        }
+
+        function handleReferralSubmit(event) {
+            event.preventDefault();
+
+            const phoneVal = document.getElementById("patientPhone").value.trim();
+            const scanVal = document.getElementById("scanTypeSelect").value;
+            const priceVal = document.getElementById("scanPrice").value;
+            const commVal = document.getElementById("doctorCommission").value;
+
+            const now = new Date();
+            const monthKey = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            const formattedDateTime = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ", " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const newRef = {
+                id: generateTokenID(),
+                month: monthKey,
+                timestamp: formattedDateTime,
+                doctorPhone: loggedInUser.phone,
+                doctorName: loggedInUser.name,
+                name: document.getElementById("patientName").value.trim(),
+                phone: phoneVal !== "" ? phoneVal : "Not Provided",
+                scan: scanVal !== "" ? scanVal : "General Scan / Consultation",
+                price: priceVal !== "" ? Number(priceVal) : 0,
+                commission: commVal !== "" ? Number(commVal) : 0,
+                arrivalStatus: "Pending",
+                scanStatus: "Pending",
+                paymentStatus: "Not Paid",
+                reportNotes: "",
+                imageData: null
+            };
+
+            referralsDB.unshift(newRef);
+            saveReferrals();
+            lastCreatedTokenData = newRef;
+
+            document.getElementById("modalTokenId").textContent = newRef.id;
+            document.getElementById("modalPatientName").textContent = newRef.name;
+            document.getElementById("modalScanType").textContent = newRef.scan;
+            
+            document.getElementById("confirmationModal").classList.remove("hidden");
+            document.getElementById("confirmationModal").classList.add("flex");
+            
+            populateMonthDropdowns();
+            renderDoctorDashboard();
+        }
+
+        function closeConfirmationModal() {
+            document.getElementById("confirmationModal").classList.remove("flex");
+            document.getElementById("confirmationModal").classList.add("hidden");
+            document.getElementById("referralForm").reset();
+            updateScanPricing();
+        }
+
+        function sendTokenToAdminWhatsApp() {
+            if (!lastCreatedTokenData) return;
+            const message = `*NEW PATIENT REFERRAL TOKEN*\n` +
+                            `Center: Mahavir Ultrasound & Digital X-ray\n` +
+                            `Date/Time: ${lastCreatedTokenData.timestamp}\n` +
+                            `Token ID: *${lastCreatedTokenData.id}*\n` +
+                            `Doctor: ${lastCreatedTokenData.doctorName}\n` +
+                            `Patient: ${lastCreatedTokenData.name}\n` +
+                            `Patient Phone: ${lastCreatedTokenData.phone}\n` +
+                            `Scan: ${lastCreatedTokenData.scan}\n` +
+                            `Fee: ₹${lastCreatedTokenData.price} | Comm: ₹${lastCreatedTokenData.commission}`;
+            
+            const adminPhoneWithCode = "91" + ADMIN_MOBILE;
+            window.open(`https://wa.me/${adminPhoneWithCode}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        function populateMonthDropdowns() {
+            const currentMonthKey = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            let monthsSet = new Set([currentMonthKey]);
+            referralsDB.forEach(r => { if (r.month) monthsSet.add(r.month); });
+            
+            let sortedMonths = Array.from(monthsSet);
+
+            const docSelect = document.getElementById("monthArchiveSelect");
+            const adminSelect = document.getElementById("adminMonthArchiveSelect");
+            
+            const populateSelect = (el) => {
+                const currentVal = el.value || currentMonthKey;
+                el.innerHTML = "";
+                sortedMonths.forEach(m => {
+                    const opt = document.createElement("option");
+                    opt.value = m;
+                    opt.textContent = m;
+                    if (m === currentVal) opt.selected = true;
+                    el.appendChild(opt);
+                });
+            };
+
+            populateSelect(docSelect);
+            populateSelect(adminSelect);
+        }
+
+        function renderDoctorDashboard() {
+            const selectedMonth = document.getElementById("monthArchiveSelect").value || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            const tbody = document.getElementById("doctorReferralsTableBody");
+            
+            const myRefs = referralsDB.filter(r => r.doctorPhone === loggedInUser.phone && (r.month === selectedMonth || (!r.month && selectedMonth.includes("2026"))));
+            
+            let totalEarned = 0;
+            tbody.innerHTML = "";
+
+            if (myRefs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-400">No patient referrals found for ${selectedMonth}.</td></tr>`;
+                document.getElementById("doctorEarningsDisplay").textContent = "₹0";
+                return;
+            }
+
+            myRefs.forEach(ref => {
+                if (ref.scanStatus === "Completed") totalEarned += ref.commission;
+
+                let arrivalBadge = ref.arrivalStatus === "Arrived" ? "bg-green-100 text-green-700" : (ref.arrivalStatus === "No Show" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-600");
+                let scanBadge = ref.scanStatus === "Completed" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700";
+                let payBadge = ref.paymentStatus === "Paid" ? "bg-emerald-100 text-emerald-700" : "bg-orange-100 text-orange-700";
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3">
+                            <span class="font-mono font-bold text-blue-600 block">${ref.id}</span>
+                            <span class="text-[11px] text-gray-400">${ref.timestamp}</span>
+                        </td>
+                        <td class="p-3 font-medium text-gray-800">${ref.name}<br><span class="text-xs text-gray-400">${ref.phone}</span></td>
+                        <td class="p-3 text-gray-600">${ref.scan}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${arrivalBadge}">${ref.arrivalStatus}</span></td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${scanBadge}">${ref.scanStatus}</span></td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${payBadge}">${ref.paymentStatus}</span></td>
+                        <td class="p-3 font-semibold text-green-700">₹${ref.commission}</td>
+                        <td class="p-3 text-right">
+                            ${(ref.reportNotes || ref.imageData) ? 
+                                `<button onclick="openReportViewModal('${ref.id}')" class="bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-100">View Report/Image</button>` : 
+                                `<span class="text-xs text-gray-400 italic">No notes uploaded</span>`
+                            }
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById("doctorEarningsDisplay").textContent = `₹${totalEarned}`;
+        }
+
+        function renderAdminTable() {
+            const selectedMonth = document.getElementById("adminMonthArchiveSelect").value || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            const tbody = document.getElementById("adminReferralsTableBody");
+            
+            const filteredRefs = referralsDB.filter(r => r.month === selectedMonth || (!r.month && selectedMonth.includes("2026")));
+            
+            tbody.innerHTML = "";
+            if (filteredRefs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-400">No referrals found for ${selectedMonth}.</td></tr>`;
+                return;
+            }
+
+            filteredRefs.forEach(ref => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50" id="row-${ref.id}">
+                        <td class="p-3">
+                            <span class="font-mono font-bold text-blue-600 block">${ref.id}</span>
+                            <span class="text-[11px] text-gray-400">${ref.timestamp}</span>
+                        </td>
+                        <td class="p-3 font-medium text-gray-800">${ref.doctorName}</td>
+                        <td class="p-3">${ref.name}<br><span class="text-xs text-gray-400">${ref.phone}</span></td>
+                        <td class="p-3">${ref.scan}<br><span class="text-xs text-gray-400">Fee: ₹${ref.price} | Comm: ₹${ref.commission}</span></td>
+                        <td class="p-3">
+                            <select id="arrival-${ref.id}" class="text-xs border rounded-md p-1 bg-white font-semibold">
+                                <option value="Pending" ${ref.arrivalStatus === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
+                                <option value="Arrived" ${ref.arrivalStatus === 'Arrived' ? 'selected' : ''}>✅ Arrived</option>
+                                <option value="No Show" ${ref.arrivalStatus === 'No Show' ? 'selected' : ''}>❌ No Show</option>
+                            </select>
+                        </td>
+                        <td class="p-3">
+                            <select id="scan-${ref.id}" class="text-xs border rounded-md p-1 bg-white font-semibold">
+                                <option value="Pending" ${ref.scanStatus === 'Pending' ? 'selected' : ''}>⏳ Pending</option>
+                                <option value="Completed" ${ref.scanStatus === 'Completed' ? 'selected' : ''}>🎉 Completed</option>
+                            </select>
+                        </td>
+                        <td class="p-3">
+                            <select id="pay-${ref.id}" class="text-xs border rounded-md p-1 bg-white font-semibold">
+                                <option value="Not Paid" ${ref.paymentStatus === 'Not Paid' ? 'selected' : ''}>❌ Not Paid</option>
+                                <option value="Paid" ${ref.paymentStatus === 'Paid' ? 'selected' : ''}>✅ Paid</option>
+                            </select>
+                        </td>
+                        <td class="p-3 text-right space-y-1">
+                            <button onclick="openAdminEditReportModal('${ref.id}')" class="bg-gray-100 text-gray-700 px-2.5 py-1 rounded text-xs font-semibold block w-full hover:bg-gray-200">
+                                ${ref.reportNotes || ref.imageData ? '✏️ Edit Note/Img' : '➕ Add Note/Img'}
+                            </button>
+                            <button onclick="commitAdminChanges('${ref.id}')" class="bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-semibold shadow hover:bg-blue-700 block w-full">
+                                💾 Save & Notify
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Admin commits changes explicitly by clicking Save & Notify
+        function commitAdminChanges(id) {
+            const ref = referralsDB.find(r => r.id === id);
+            if (!ref) return;
+
+            const newArrival = document.getElementById(`arrival-${id}`).value;
+            const newScan = document.getElementById(`scan-${id}`).value;
+            const newPay = document.getElementById(`pay-${id}`).value;
+
+            ref.arrivalStatus = newArrival;
+            ref.scanStatus = newScan;
+            ref.paymentStatus = newPay;
+
+            if (newScan === "Completed" && ref.arrivalStatus === "Pending") {
+                ref.arrivalStatus = "Arrived";
+            }
+
+            saveReferrals();
+            renderAdminTable();
+            alert(`Changes saved & doctor notified simultaneously for Token ID: ${ref.id}`);
+        }
+
+        function openAdminEditReportModal(id) {
+            const ref = referralsDB.find(r => r.id === id);
+            if (!ref) return;
+
+            const notes = prompt("Enter Radiologist Note / Impression for Doctor:", ref.reportNotes || "");
+            if (notes !== null) {
+                ref.reportNotes = notes;
+            }
+
+            const uploadImg = confirm("Would you like to attach a Scan Image or Report PDF/Image?");
+            if (uploadImg) {
+                const fileInput = document.createElement("input");
+                fileInput.type = "file";
+                fileInput.accept = "image/*";
+                fileInput.onchange = e => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = event => {
+                            ref.imageData = event.target.result;
+                            saveReferrals();
+                            renderAdminTable();
+                            alert("Scan note & report image attached temporarily. Click 'Save & Notify' to confirm!");
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+                fileInput.click();
+            } else {
+                saveReferrals();
+                renderAdminTable();
+            }
+        }
+
+        function openReportViewModal(id) {
+            const ref = referralsDB.find(r => r.id === id);
+            if (!ref) return;
+
+            document.getElementById("reportModalTitle").textContent = `Report: ${ref.name} (${ref.id})`;
+            document.getElementById("reportModalNotes").textContent = ref.reportNotes || "No clinical notes attached yet.";
+
+            const imgContainer = document.getElementById("reportModalImageContainer");
+            const imgElement = document.getElementById("reportModalImage");
+
+            if (ref.imageData) {
+                imgElement.src = ref.imageData;
+                imgContainer.classList.remove("hidden");
+            } else {
+                imgContainer.classList.add("hidden");
+            }
+
+            document.getElementById("reportViewModal").classList.remove("hidden");
+            document.getElementById("reportViewModal").classList.add("flex");
+        }
+
+        function closeReportViewModal() {
+            document.getElementById("reportViewModal").classList.remove("flex");
+            document.getElementById("reportViewModal").classList.add("hidden");
+        }
+
+        window.onload = function() { 
+            initializeScanDropdown(); 
+            checkAutoLogin();
+        };
+    </script>
+</body>
+</html>
